@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
 import { sendInquiryNotification } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
@@ -15,29 +14,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    let inquiryId = null
-
-    // Save to database if available
-    if (prisma) {
-      try {
-        const inquiry = await prisma.inquiry.create({
-          data: {
-            firstName,
-            lastName,
-            email,
-            phone: phone || null,
-            service,
-            message,
-          },
-        })
-        inquiryId = inquiry.id
-      } catch (dbError) {
-        console.error('Database save failed:', dbError)
-        // Continue without database - email will still be sent
-      }
-    }
-
-    // Send email notifications
+    // Send email notification
     await sendInquiryNotification({
       firstName,
       lastName,
@@ -48,7 +25,7 @@ export async function POST(request: NextRequest) {
     }).catch(console.error)
 
     return NextResponse.json(
-      { success: true, id: inquiryId },
+      { success: true },
       { status: 201 }
     )
   } catch (error) {
