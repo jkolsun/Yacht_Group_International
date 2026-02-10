@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
@@ -118,18 +117,15 @@ export default function AboutPageClient() {
                 whileHover={{ y: -10, transition: { duration: 0.3 } }}
               >
                 <motion.div
-                  className="team-member-image"
+                  className="team-member-avatar"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={teamInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
                   transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 >
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    sizes="160px"
-                    style={{ objectFit: 'cover' }}
-                  />
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
                 </motion.div>
                 <motion.h3
                   className="team-member-name"

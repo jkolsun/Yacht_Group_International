@@ -1,16 +1,23 @@
 'use client'
 
 import Link from 'next/link'
-import { contactInfo } from '@/lib/data'
+import { useState } from 'react'
 
 interface MenuOverlayProps {
   isOpen: boolean
   onClose: () => void
 }
 
+const serviceLinks = [
+  { href: '/services/yacht-charters', label: 'Yacht Charters' },
+  { href: '/services/yacht-sales', label: 'Yacht Sales' },
+  { href: '/services/private-jets', label: 'Private Jets' },
+  { href: '/services/exotic-cars', label: 'Exotic Cars' },
+  { href: '/services/villas', label: 'Villa Rentals' },
+]
+
 const menuLinks = [
   { href: '/', label: 'Home' },
-  { href: '/services', label: 'Services' },
   { href: '/fleet', label: 'Fleet' },
   { href: '/destinations', label: 'Destinations' },
   { href: '/about', label: 'About' },
@@ -18,54 +25,51 @@ const menuLinks = [
 ]
 
 export default function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
+  const [servicesOpen, setServicesOpen] = useState(false)
+
+  const handleClose = () => {
+    setServicesOpen(false)
+    onClose()
+  }
+
   return (
     <div className={`menu-overlay ${isOpen ? 'open' : ''}`}>
-      {/* Left panel - Contact info */}
-      <div className="menu-left">
-        <div style={{ marginBottom: '2.5rem' }}>
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '0.5rem', fontWeight: 300, letterSpacing: '0.4em', textTransform: 'uppercase', color: '#c9a96e', marginBottom: '0.6rem' }}>
-            Charters & Sales
-          </div>
-          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', fontWeight: 300, color: '#f0ebe3', lineHeight: 1.7 }}>
-            <a href={`tel:${contactInfo.phone}`} style={{ transition: 'color 0.3s' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#c9a96e'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#f0ebe3'}>
-              {contactInfo.phone}
-            </a>
-          </div>
-        </div>
-
-        <div style={{ marginBottom: '2.5rem' }}>
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '0.5rem', fontWeight: 300, letterSpacing: '0.4em', textTransform: 'uppercase', color: '#c9a96e', marginBottom: '0.6rem' }}>
-            General Inquiries
-          </div>
-          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', fontWeight: 300, color: '#f0ebe3', lineHeight: 1.7 }}>
-            <a href={`mailto:${contactInfo.email}`} style={{ transition: 'color 0.3s' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#c9a96e'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#f0ebe3'}>
-              {contactInfo.email}
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <div style={{ fontFamily: "'Outfit', sans-serif", fontSize: '0.5rem', fontWeight: 300, letterSpacing: '0.4em', textTransform: 'uppercase', color: '#c9a96e', marginBottom: '0.6rem' }}>
-            Locations
-          </div>
-          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '1.05rem', fontWeight: 300, color: '#f0ebe3', lineHeight: 1.7 }}>
-            {contactInfo.locations.slice(0, 3).join(' · ')}
-            <br />
-            {contactInfo.locations.slice(3).join(' · ')}
-          </div>
-        </div>
-      </div>
-
-      {/* Right panel - Navigation links */}
-      <div className="menu-right">
+      <div className="menu-content">
         <ul className="menu-nav">
-          {menuLinks.map((link) => (
+          <li>
+            <Link href="/" onClick={handleClose}>Home</Link>
+          </li>
+          <li className="menu-dropdown">
+            <button
+              className="menu-dropdown-toggle"
+              onClick={() => setServicesOpen(!servicesOpen)}
+            >
+              Services
+              <svg
+                className={`menu-dropdown-arrow ${servicesOpen ? 'open' : ''}`}
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <ul className={`menu-dropdown-items ${servicesOpen ? 'open' : ''}`}>
+              {serviceLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} onClick={handleClose}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+          {menuLinks.slice(1).map((link) => (
             <li key={link.href}>
-              <Link href={link.href} onClick={onClose}>
+              <Link href={link.href} onClick={handleClose}>
                 {link.label}
               </Link>
             </li>
