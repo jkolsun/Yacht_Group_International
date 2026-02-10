@@ -15,20 +15,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Save to database
-    const inquiry = await prisma.inquiry.create({
-      data: {
-        firstName,
-        lastName,
-        email,
-        phone: phone || null,
-        service,
-        message,
-      },
-    })
+    let inquiryId = null
 
-    // Send email notifications (non-blocking)
-    sendInquiryNotification({
+    // Save to database if available
+    if (prisma) {
+      try {
+        const inquiry = await prisma.inquiry.create({
+          data: {
+            firstName,
+            lastName,
+            email,
+            phone: phone || null,
+            service,
+            message,
+          },
+        })
+        inquiryId = inquiry.id
+      } catch (dbError) {
+        console.error('Database save failed:', dbError)
+        // Continue without database - email will still be sent
+      }
+    }
+
+    // Send email notifications
+    await sendInquiryNotification({
       firstName,
       lastName,
       email,
@@ -38,7 +48,7 @@ export async function POST(request: NextRequest) {
     }).catch(console.error)
 
     return NextResponse.json(
-      { success: true, id: inquiry.id },
+      { success: true, id: inquiryId },
       { status: 201 }
     )
   } catch (error) {
