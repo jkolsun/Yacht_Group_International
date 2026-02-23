@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/db'
 import { validateApiKey, unauthorizedResponse } from '@/lib/lead-system/middleware/auth'

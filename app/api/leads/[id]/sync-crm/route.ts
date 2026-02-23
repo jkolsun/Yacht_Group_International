@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { validateApiKey, unauthorizedResponse } from '@/lib/lead-system/middleware/auth'
 import { syncLeadToCRM } from '@/lib/lead-system/services/lead-processor'
