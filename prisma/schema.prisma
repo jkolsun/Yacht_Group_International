@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id                       String     @id @default(uuid())
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+
+  // Contact info
+  name                     String
+  phone                    String
+  email                    String?
+
+  // Source tracking
+  source                   String            // META, GOOGLE, TIKTOK, DIRECT, LANDING
+  adId                     String?
+  campaignId               String?
+  utmSource                String?
+  utmMedium                String?
+  utmCampaign              String?
+
+  // Qualification data (filled in when lead completes qualify form)
+  rentalType               String?           // day-charter, overnight, multi-day, event, purchase
+  timeline                 String?           // "3 days", "next week", "2 months"
+  budget                   String?           // "$10,000", "$25k-50k"
+  location                 String?           // "Miami", "Mediterranean"
+  guestCount               String?           // "8", "12-15"
+  preferredDate            String?           // "March 15, 2026"
+  specialRequests          String?           // freeform notes from the lead
+
+  // Scoring
+  score                    Int        @default(10)
+  status                   String     @default("NEW")
+
+  // Outreach tracking
+  smsCount                 Int        @default(0)
+  emailCount               Int        @default(0)
+  lastContactedAt          DateTime?
+  qualificationLink        String?
+  linkDeliveredAt          DateTime?
+  linkOpenedAt             DateTime?
+  qualificationStartedAt   DateTime?
+  qualificationCompletedAt DateTime?
+
+  // CRM
+  crmId                    String?
+  crmSyncedAt              DateTime?
+  crmStatus                String?
+
+  // Voice (placeholder for future ElevenLabs integration)
+  voiceCallId              String?
+  voiceCallStatus          String?
+  voiceCallAttempts        Int        @default(0)
+  voiceTranscript          String?
+  voiceSummary             String?
+  voiceCalledAt            DateTime?
+
+  // Relations
+  activities               Activity[]
+  scoreLog                 ScoreLog[]
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  leadId    String
+  type      String
+  channel   String?
+  data      String?
+  note      String?
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model ScoreLog {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  leadId        String
+  previousScore Int
+  newScore      Int
+  reason        String
+  ruleApplied   String?
+  lead          Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}

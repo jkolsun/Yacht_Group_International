@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { Hero } from '@/components/sections'
-import { ContactForm } from '@/components/sections'
+import { ContactForm, LeadCaptureForm } from '@/components/sections'
 import { contactInfo } from '@/lib/data'
 
 const fadeInUp = {
@@ -137,6 +137,23 @@ export default function ContactPageClient() {
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* Quick Charter Inquiry */}
+      <section className="lead-capture-section">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <div className="section-label" style={{ textAlign: 'center', marginBottom: '0.75rem' }}>Quick Inquiry</div>
+          <h2 className="section-heading" style={{ textAlign: 'center', marginBottom: '0.75rem' }}>Charter Request</h2>
+          <p style={{ textAlign: 'center', color: '#9e978c', marginBottom: '2.5rem', fontFamily: "'Cormorant Garamond', serif" }}>
+            Skip the details — just share your name and phone, and our team will handle the rest.
+          </p>
+          <LeadCaptureForm />
+        </motion.div>
       </section>
 
       {/* Map placeholder */}

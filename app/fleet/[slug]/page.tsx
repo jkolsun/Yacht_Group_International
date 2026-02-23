@@ -110,7 +110,7 @@ export default async function YachtDetailPage({ params }: { params: Promise<{ sl
 
           {/* CTA */}
           <div className="detail-cta">
-            <Link href="/contact" className="btn-cta">
+            <Link href={`/contact?interest=${encodeURIComponent(yacht.name)}`} className="btn-cta">
               Inquire About This Yacht
             </Link>
             <Link href="/fleet" className="back-link">

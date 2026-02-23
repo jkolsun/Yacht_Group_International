@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { services, getFeaturedYachts, getFeaturedDestinations, contactInfo, getFeaturedJets, getFeaturedCars, getFeaturedVillas } from '@/lib/data'
 import TestimonialCarousel from '@/components/home/TestimonialCarousel'
+import LeadCaptureForm from '@/components/sections/LeadCaptureForm'
 
 // Animation variants
 const fadeInUp = {
@@ -424,6 +425,16 @@ export default function HomePage() {
             <p className="process-desc">Embark on your journey with complete peace of mind. Our team remains available 24/7 throughout your voyage.</p>
           </motion.div>
         </motion.div>
+      </section>
+
+      {/* ======================== LEAD CAPTURE ======================== */}
+      <section className="lead-capture-section">
+        <AnimatedSection>
+          <div className="section-label">Quick Inquiry</div>
+          <h2 className="section-heading">Plan Your Charter</h2>
+          <p className="section-desc">Share a few details and our concierge team will reach out with personalized options.</p>
+        </AnimatedSection>
+        <LeadCaptureForm />
       </section>
 
       {/* ======================== CONTACT CTA ======================== */}
