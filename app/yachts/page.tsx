@@ -42,10 +42,11 @@ function AnimatedSection({ children, className }: { children: React.ReactNode; c
 }
 
 type SizeFilter = 'all' | 'under-100' | '100-150' | '150-200' | 'over-200'
+type PriceFilter = 'all' | 'under-10000' | '10000-30000' | 'over-30000'
 
 export default function YachtsPage() {
   const [sizeFilter, setSizeFilter] = useState<SizeFilter>('all')
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000])
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all')
   const [guestFilter, setGuestFilter] = useState<number>(0)
 
   const heroRef = useRef(null)
@@ -57,28 +58,21 @@ export default function YachtsPage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-  // Get min/max prices for slider
-  const priceStats = useMemo(() => {
-    const rates = yachts.map(y => y.dailyRate)
-    return { min: Math.min(...rates), max: Math.max(...rates) }
-  }, [])
-
   const filteredYachts = useMemo(() => {
     return yachts.filter(yacht => {
-      // Size filter
       if (sizeFilter !== 'all') {
         if (sizeFilter === 'under-100' && yacht.length >= 100) return false
         if (sizeFilter === '100-150' && (yacht.length < 100 || yacht.length >= 150)) return false
         if (sizeFilter === '150-200' && (yacht.length < 150 || yacht.length >= 200)) return false
         if (sizeFilter === 'over-200' && yacht.length < 200) return false
       }
-      // Price filter
-      if (yacht.dailyRate < priceRange[0] || yacht.dailyRate > priceRange[1]) return false
-      // Guest filter
+      if (priceFilter === 'under-10000' && yacht.dailyRate >= 10000) return false
+      if (priceFilter === '10000-30000' && (yacht.dailyRate < 10000 || yacht.dailyRate > 30000)) return false
+      if (priceFilter === 'over-30000' && yacht.dailyRate <= 30000) return false
       if (guestFilter > 0 && yacht.guests < guestFilter) return false
       return true
     })
-  }, [sizeFilter, priceRange, guestFilter])
+  }, [sizeFilter, priceFilter, guestFilter])
 
   const sizeCategories: { key: SizeFilter; label: string }[] = [
     { key: 'all', label: 'All Sizes' },
@@ -86,6 +80,13 @@ export default function YachtsPage() {
     { key: '100-150', label: '100\' - 150\'' },
     { key: '150-200', label: '150\' - 200\'' },
     { key: 'over-200', label: 'Over 200\'' },
+  ]
+
+  const priceRanges: { key: PriceFilter; label: string }[] = [
+    { key: 'all', label: 'Any Price' },
+    { key: 'under-10000', label: 'Under $10K' },
+    { key: '10000-30000', label: '$10K - $30K' },
+    { key: 'over-30000', label: 'Over $30K' },
   ]
 
   const guestOptions = [0, 6, 8, 10, 12]
@@ -183,37 +184,19 @@ export default function YachtsPage() {
             </div>
           </div>
 
-          {/* Price Slider */}
-          <div className="filter-group filter-group-slider">
-            <label className="filter-label">
-              Daily Rate: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
-            </label>
-            <div className="price-slider-container">
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([Math.min(Number(e.target.value), priceRange[1] - 1000), priceRange[1]])}
-                className="price-slider"
-              />
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0] + 1000)])}
-                className="price-slider"
-              />
-              <div className="price-slider-track">
-                <div
-                  className="price-slider-range"
-                  style={{
-                    left: `${((priceRange[0] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`,
-                    right: `${100 - ((priceRange[1] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`
-                  }}
-                />
-              </div>
+          {/* Price Filter */}
+          <div className="filter-group">
+            <label className="filter-label">Daily Rate</label>
+            <div className="ec-filters">
+              {priceRanges.map((range) => (
+                <button
+                  key={range.key}
+                  className={`ec-filter-btn ${priceFilter === range.key ? 'active' : ''}`}
+                  onClick={() => setPriceFilter(range.key)}
+                >
+                  {range.label}
+                </button>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -221,13 +204,13 @@ export default function YachtsPage() {
         {/* Results Count */}
         <div className="filter-results">
           <span>{filteredYachts.length} yacht{filteredYachts.length !== 1 ? 's' : ''} found</span>
-          {(sizeFilter !== 'all' || guestFilter > 0 || priceRange[0] > priceStats.min || priceRange[1] < priceStats.max) && (
+          {(sizeFilter !== 'all' || guestFilter > 0 || priceFilter !== 'all') && (
             <button
               className="filter-clear"
               onClick={() => {
                 setSizeFilter('all')
                 setGuestFilter(0)
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear Filters
@@ -240,7 +223,7 @@ export default function YachtsPage() {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          key={`${sizeFilter}-${priceRange.join('-')}-${guestFilter}`}
+          key={`${sizeFilter}-${priceFilter}-${guestFilter}`}
         >
           {filteredYachts.map((yacht) => (
             <motion.div key={yacht.id} variants={scaleIn}>
@@ -289,7 +272,7 @@ export default function YachtsPage() {
               onClick={() => {
                 setSizeFilter('all')
                 setGuestFilter(0)
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear All Filters

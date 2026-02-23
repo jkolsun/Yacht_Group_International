@@ -42,10 +42,11 @@ function AnimatedSection({ children, className }: { children: React.ReactNode; c
 }
 
 type CategoryFilter = 'all' | PrivateJet['category']
+type PriceFilter = 'all' | 'under-4000' | '4000-8000' | 'over-8000'
 
 export default function JetsPage() {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('all')
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000])
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all')
   const [passengerFilter, setPassengerFilter] = useState<number>(0)
 
   const heroRef = useRef(null)
@@ -57,23 +58,16 @@ export default function JetsPage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-  // Get min/max prices for slider
-  const priceStats = useMemo(() => {
-    const rates = privateJets.map(j => j.hourlyRate)
-    return { min: Math.min(...rates), max: Math.max(...rates) }
-  }, [])
-
   const filteredJets = useMemo(() => {
     return privateJets.filter(jet => {
-      // Category filter
       if (categoryFilter !== 'all' && jet.category !== categoryFilter) return false
-      // Price filter
-      if (jet.hourlyRate < priceRange[0] || jet.hourlyRate > priceRange[1]) return false
-      // Passenger filter
+      if (priceFilter === 'under-4000' && jet.hourlyRate >= 4000) return false
+      if (priceFilter === '4000-8000' && (jet.hourlyRate < 4000 || jet.hourlyRate > 8000)) return false
+      if (priceFilter === 'over-8000' && jet.hourlyRate <= 8000) return false
       if (passengerFilter > 0 && jet.passengers < passengerFilter) return false
       return true
     })
-  }, [categoryFilter, priceRange, passengerFilter])
+  }, [categoryFilter, priceFilter, passengerFilter])
 
   const categories: { key: CategoryFilter; label: string }[] = [
     { key: 'all', label: 'All Aircraft' },
@@ -82,6 +76,13 @@ export default function JetsPage() {
     { key: 'super-midsize', label: 'Super Midsize' },
     { key: 'heavy', label: 'Heavy Jets' },
     { key: 'ultra-long-range', label: 'Ultra Long Range' },
+  ]
+
+  const priceRanges: { key: PriceFilter; label: string }[] = [
+    { key: 'all', label: 'Any Price' },
+    { key: 'under-4000', label: 'Under $4K' },
+    { key: '4000-8000', label: '$4K - $8K' },
+    { key: 'over-8000', label: 'Over $8K' },
   ]
 
   const passengerOptions = [0, 8, 10, 12, 14]
@@ -179,37 +180,19 @@ export default function JetsPage() {
             </div>
           </div>
 
-          {/* Price Slider */}
-          <div className="filter-group filter-group-slider">
-            <label className="filter-label">
-              Hourly Rate: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
-            </label>
-            <div className="price-slider-container">
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([Math.min(Number(e.target.value), priceRange[1] - 500), priceRange[1]])}
-                className="price-slider"
-              />
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0] + 500)])}
-                className="price-slider"
-              />
-              <div className="price-slider-track">
-                <div
-                  className="price-slider-range"
-                  style={{
-                    left: `${((priceRange[0] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`,
-                    right: `${100 - ((priceRange[1] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`
-                  }}
-                />
-              </div>
+          {/* Price Filter */}
+          <div className="filter-group">
+            <label className="filter-label">Hourly Rate</label>
+            <div className="ec-filters">
+              {priceRanges.map((range) => (
+                <button
+                  key={range.key}
+                  className={`ec-filter-btn ${priceFilter === range.key ? 'active' : ''}`}
+                  onClick={() => setPriceFilter(range.key)}
+                >
+                  {range.label}
+                </button>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -217,13 +200,13 @@ export default function JetsPage() {
         {/* Results Count */}
         <div className="filter-results">
           <span>{filteredJets.length} aircraft found</span>
-          {(categoryFilter !== 'all' || passengerFilter > 0 || priceRange[0] > priceStats.min || priceRange[1] < priceStats.max) && (
+          {(categoryFilter !== 'all' || passengerFilter > 0 || priceFilter !== 'all') && (
             <button
               className="filter-clear"
               onClick={() => {
                 setCategoryFilter('all')
                 setPassengerFilter(0)
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear Filters
@@ -236,7 +219,7 @@ export default function JetsPage() {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          key={`${categoryFilter}-${priceRange.join('-')}-${passengerFilter}`}
+          key={`${categoryFilter}-${priceFilter}-${passengerFilter}`}
         >
           {filteredJets.map((jet) => (
             <motion.div key={jet.id} variants={scaleIn}>
@@ -283,7 +266,7 @@ export default function JetsPage() {
               onClick={() => {
                 setCategoryFilter('all')
                 setPassengerFilter(0)
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear All Filters

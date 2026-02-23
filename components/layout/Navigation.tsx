@@ -71,6 +71,8 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
+  const [mobileOpenSection, setMobileOpenSection] = useState<string | null>(null)
+  const [mobileOpenSubmenu, setMobileOpenSubmenu] = useState<string | null>(null)
   const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -88,6 +90,8 @@ export default function Navigation() {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
+      setMobileOpenSection(null)
+      setMobileOpenSubmenu(null)
     }
   }, [isMobileMenuOpen])
 
@@ -268,40 +272,91 @@ export default function Navigation() {
                   >
                     {link.dropdown ? (
                       <div className="mobile-nav-group">
-                        <Link
-                          href={link.href}
-                          className="mobile-nav-link"
-                          onClick={() => setIsMobileMenuOpen(false)}
+                        <button
+                          className={`mobile-nav-link mobile-nav-toggle ${mobileOpenSection === link.label ? 'open' : ''}`}
+                          onClick={() => {
+                            setMobileOpenSection(mobileOpenSection === link.label ? null : link.label)
+                            setMobileOpenSubmenu(null)
+                          }}
                         >
                           {link.label}
-                        </Link>
-                        <div className="mobile-dropdown">
-                          {link.dropdown.map((item) => (
-                            <div key={item.href + item.label}>
-                              <Link
-                                href={item.href}
-                                className="mobile-dropdown-link"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                              >
-                                {item.label}
-                              </Link>
-                              {item.submenu && (
-                                <div className="mobile-submenu">
-                                  {item.submenu.map((subItem) => (
+                          <svg
+                            className="mobile-toggle-arrow"
+                            width="12"
+                            height="8"
+                            viewBox="0 0 12 8"
+                            fill="none"
+                          >
+                            <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                        <AnimatePresence>
+                          {mobileOpenSection === link.label && (
+                            <motion.div
+                              className="mobile-dropdown"
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                              style={{ overflow: 'hidden' }}
+                            >
+                              {link.dropdown.map((item) => (
+                                <div key={item.href + item.label}>
+                                  {item.submenu ? (
+                                    <>
+                                      <button
+                                        className={`mobile-dropdown-link mobile-dropdown-toggle ${mobileOpenSubmenu === item.label ? 'open' : ''}`}
+                                        onClick={() => setMobileOpenSubmenu(mobileOpenSubmenu === item.label ? null : item.label)}
+                                      >
+                                        {item.label}
+                                        <svg
+                                          className="mobile-toggle-arrow small"
+                                          width="10"
+                                          height="6"
+                                          viewBox="0 0 10 6"
+                                          fill="none"
+                                        >
+                                          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        </svg>
+                                      </button>
+                                      <AnimatePresence>
+                                        {mobileOpenSubmenu === item.label && (
+                                          <motion.div
+                                            className="mobile-submenu"
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                                            style={{ overflow: 'hidden' }}
+                                          >
+                                            {item.submenu.map((subItem) => (
+                                              <Link
+                                                key={subItem.href}
+                                                href={subItem.href}
+                                                className="mobile-submenu-link"
+                                                onClick={() => setIsMobileMenuOpen(false)}
+                                              >
+                                                {subItem.label}
+                                              </Link>
+                                            ))}
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </>
+                                  ) : (
                                     <Link
-                                      key={subItem.href}
-                                      href={subItem.href}
-                                      className="mobile-submenu-link"
+                                      href={item.href}
+                                      className="mobile-dropdown-link"
                                       onClick={() => setIsMobileMenuOpen(false)}
                                     >
-                                      {subItem.label}
+                                      {item.label}
                                     </Link>
-                                  ))}
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     ) : (
                       <Link

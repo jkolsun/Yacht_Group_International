@@ -175,6 +175,26 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* ======================== TESTIMONIAL ======================== */}
+      <section className="testimonial-section">
+        <motion.div
+          className="testimonial-content"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="testimonial-quote">&ldquo;</div>
+          <blockquote className="testimonial-text">
+            The attention to detail was extraordinary. From the moment we stepped aboard, every aspect of our journey was flawlessly orchestrated. This wasn&apos;t just a charter—it was a transformative experience.
+          </blockquote>
+          <div className="testimonial-author">
+            <span className="testimonial-name">Michael & Sarah Richardson</span>
+            <span className="testimonial-trip">Mediterranean Charter, Summer 2024</span>
+          </div>
+        </motion.div>
+      </section>
+
       {/* ======================== WHY CHOOSE US ======================== */}
       <section className="why-section-v2">
         {/* Main Split Block */}
@@ -373,26 +393,6 @@ export default function HomePage() {
               <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </Link>
-        </motion.div>
-      </section>
-
-      {/* ======================== TESTIMONIAL ======================== */}
-      <section className="testimonial-section">
-        <motion.div
-          className="testimonial-content"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="testimonial-quote">"</div>
-          <blockquote className="testimonial-text">
-            The attention to detail was extraordinary. From the moment we stepped aboard, every aspect of our journey was flawlessly orchestrated. This wasn't just a charter—it was a transformative experience.
-          </blockquote>
-          <div className="testimonial-author">
-            <span className="testimonial-name">Michael & Sarah Richardson</span>
-            <span className="testimonial-trip">Mediterranean Charter, Summer 2024</span>
-          </div>
         </motion.div>
       </section>
 

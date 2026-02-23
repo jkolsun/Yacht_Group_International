@@ -42,10 +42,11 @@ function AnimatedSection({ children, className }: { children: React.ReactNode; c
 }
 
 type RegionFilter = 'all' | Villa['region']
+type PriceFilter = 'all' | 'under-8000' | '8000-12000' | 'over-12000'
 
 export default function VillasPage() {
   const [regionFilter, setRegionFilter] = useState<RegionFilter>('all')
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 20000])
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all')
   const [bedroomFilter, setBedroomFilter] = useState<number>(0)
 
   const heroRef = useRef(null)
@@ -57,23 +58,16 @@ export default function VillasPage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-  // Get min/max prices for slider
-  const priceStats = useMemo(() => {
-    const rates = villas.map(v => v.dailyRate)
-    return { min: Math.min(...rates), max: Math.max(...rates) }
-  }, [])
-
   const filteredVillas = useMemo(() => {
     return villas.filter(villa => {
-      // Region filter
       if (regionFilter !== 'all' && villa.region !== regionFilter) return false
-      // Price filter
-      if (villa.dailyRate < priceRange[0] || villa.dailyRate > priceRange[1]) return false
-      // Bedroom filter
+      if (priceFilter === 'under-8000' && villa.dailyRate >= 8000) return false
+      if (priceFilter === '8000-12000' && (villa.dailyRate < 8000 || villa.dailyRate > 12000)) return false
+      if (priceFilter === 'over-12000' && villa.dailyRate <= 12000) return false
       if (bedroomFilter > 0 && villa.bedrooms < bedroomFilter) return false
       return true
     })
-  }, [regionFilter, priceRange, bedroomFilter])
+  }, [regionFilter, priceFilter, bedroomFilter])
 
   const regions: { key: RegionFilter; label: string }[] = [
     { key: 'all', label: 'All Regions' },
@@ -82,6 +76,13 @@ export default function VillasPage() {
     { key: 'americas', label: 'Americas' },
     { key: 'asia-pacific', label: 'Asia Pacific' },
     { key: 'middle-east', label: 'Middle East' },
+  ]
+
+  const priceRanges: { key: PriceFilter; label: string }[] = [
+    { key: 'all', label: 'Any Price' },
+    { key: 'under-8000', label: 'Under $8K' },
+    { key: '8000-12000', label: '$8K - $12K' },
+    { key: 'over-12000', label: 'Over $12K' },
   ]
 
   const bedroomOptions = [0, 5, 6, 7, 8]
@@ -179,37 +180,19 @@ export default function VillasPage() {
             </div>
           </div>
 
-          {/* Price Slider */}
-          <div className="filter-group filter-group-slider">
-            <label className="filter-label">
-              Daily Rate: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
-            </label>
-            <div className="price-slider-container">
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([Math.min(Number(e.target.value), priceRange[1] - 500), priceRange[1]])}
-                className="price-slider"
-              />
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0] + 500)])}
-                className="price-slider"
-              />
-              <div className="price-slider-track">
-                <div
-                  className="price-slider-range"
-                  style={{
-                    left: `${((priceRange[0] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`,
-                    right: `${100 - ((priceRange[1] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`
-                  }}
-                />
-              </div>
+          {/* Price Filter */}
+          <div className="filter-group">
+            <label className="filter-label">Nightly Rate</label>
+            <div className="ec-filters">
+              {priceRanges.map((range) => (
+                <button
+                  key={range.key}
+                  className={`ec-filter-btn ${priceFilter === range.key ? 'active' : ''}`}
+                  onClick={() => setPriceFilter(range.key)}
+                >
+                  {range.label}
+                </button>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -217,13 +200,13 @@ export default function VillasPage() {
         {/* Results Count */}
         <div className="filter-results">
           <span>{filteredVillas.length} villa{filteredVillas.length !== 1 ? 's' : ''} found</span>
-          {(regionFilter !== 'all' || bedroomFilter > 0 || priceRange[0] > priceStats.min || priceRange[1] < priceStats.max) && (
+          {(regionFilter !== 'all' || bedroomFilter > 0 || priceFilter !== 'all') && (
             <button
               className="filter-clear"
               onClick={() => {
                 setRegionFilter('all')
                 setBedroomFilter(0)
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear Filters
@@ -236,7 +219,7 @@ export default function VillasPage() {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          key={`${regionFilter}-${priceRange.join('-')}-${bedroomFilter}`}
+          key={`${regionFilter}-${priceFilter}-${bedroomFilter}`}
         >
           {filteredVillas.map((villa) => (
             <motion.div key={villa.id} variants={scaleIn}>
@@ -285,7 +268,7 @@ export default function VillasPage() {
               onClick={() => {
                 setRegionFilter('all')
                 setBedroomFilter(0)
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear All Filters

@@ -42,10 +42,11 @@ function AnimatedSection({ children, className }: { children: React.ReactNode; c
 }
 
 type FilterCategory = 'all' | ExoticCar['category']
+type PriceFilter = 'all' | 'under-1500' | '1500-2500' | 'over-2500'
 
 export default function ExoticCarsPage() {
   const [categoryFilter, setCategoryFilter] = useState<FilterCategory>('all')
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 4000])
+  const [priceFilter, setPriceFilter] = useState<PriceFilter>('all')
 
   const heroRef = useRef(null)
   const { scrollYProgress } = useScroll({
@@ -56,21 +57,15 @@ export default function ExoticCarsPage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
-  // Get min/max prices for slider
-  const priceStats = useMemo(() => {
-    const rates = exoticCars.map(c => c.dailyRate)
-    return { min: Math.min(...rates), max: Math.max(...rates) }
-  }, [])
-
   const filteredCars = useMemo(() => {
     return exoticCars.filter(car => {
-      // Category filter
       if (categoryFilter !== 'all' && car.category !== categoryFilter) return false
-      // Price filter
-      if (car.dailyRate < priceRange[0] || car.dailyRate > priceRange[1]) return false
+      if (priceFilter === 'under-1500' && car.dailyRate >= 1500) return false
+      if (priceFilter === '1500-2500' && (car.dailyRate < 1500 || car.dailyRate > 2500)) return false
+      if (priceFilter === 'over-2500' && car.dailyRate <= 2500) return false
       return true
     })
-  }, [categoryFilter, priceRange])
+  }, [categoryFilter, priceFilter])
 
   const categories: { key: FilterCategory; label: string }[] = [
     { key: 'all', label: 'All Vehicles' },
@@ -78,6 +73,13 @@ export default function ExoticCarsPage() {
     { key: 'convertible', label: 'Convertibles' },
     { key: 'luxury', label: 'Luxury' },
     { key: 'suv', label: 'SUVs' },
+  ]
+
+  const priceRanges: { key: PriceFilter; label: string }[] = [
+    { key: 'all', label: 'Any Price' },
+    { key: 'under-1500', label: 'Under $1,500' },
+    { key: '1500-2500', label: '$1,500 - $2,500' },
+    { key: 'over-2500', label: 'Over $2,500' },
   ]
 
   return (
@@ -157,37 +159,19 @@ export default function ExoticCarsPage() {
             </div>
           </div>
 
-          {/* Price Slider */}
-          <div className="filter-group filter-group-slider">
-            <label className="filter-label">
-              Daily Rate: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()}
-            </label>
-            <div className="price-slider-container">
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([Math.min(Number(e.target.value), priceRange[1] - 200), priceRange[1]])}
-                className="price-slider"
-              />
-              <input
-                type="range"
-                min={priceStats.min}
-                max={priceStats.max}
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], Math.max(Number(e.target.value), priceRange[0] + 200)])}
-                className="price-slider"
-              />
-              <div className="price-slider-track">
-                <div
-                  className="price-slider-range"
-                  style={{
-                    left: `${((priceRange[0] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`,
-                    right: `${100 - ((priceRange[1] - priceStats.min) / (priceStats.max - priceStats.min)) * 100}%`
-                  }}
-                />
-              </div>
+          {/* Price Filter */}
+          <div className="filter-group">
+            <label className="filter-label">Daily Rate</label>
+            <div className="ec-filters">
+              {priceRanges.map((range) => (
+                <button
+                  key={range.key}
+                  className={`ec-filter-btn ${priceFilter === range.key ? 'active' : ''}`}
+                  onClick={() => setPriceFilter(range.key)}
+                >
+                  {range.label}
+                </button>
+              ))}
             </div>
           </div>
         </motion.div>
@@ -195,12 +179,12 @@ export default function ExoticCarsPage() {
         {/* Results Count */}
         <div className="filter-results">
           <span>{filteredCars.length} vehicle{filteredCars.length !== 1 ? 's' : ''} found</span>
-          {(categoryFilter !== 'all' || priceRange[0] > priceStats.min || priceRange[1] < priceStats.max) && (
+          {(categoryFilter !== 'all' || priceFilter !== 'all') && (
             <button
               className="filter-clear"
               onClick={() => {
                 setCategoryFilter('all')
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear Filters
@@ -213,7 +197,7 @@ export default function ExoticCarsPage() {
           variants={staggerContainer}
           initial="hidden"
           animate="visible"
-          key={`${categoryFilter}-${priceRange.join('-')}`}
+          key={`${categoryFilter}-${priceFilter}`}
         >
           {filteredCars.map((car) => (
             <motion.div key={car.id} variants={scaleIn}>
@@ -259,7 +243,7 @@ export default function ExoticCarsPage() {
               className="filter-clear"
               onClick={() => {
                 setCategoryFilter('all')
-                setPriceRange([priceStats.min, priceStats.max])
+                setPriceFilter('all')
               }}
             >
               Clear All Filters

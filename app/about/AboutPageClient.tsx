@@ -62,37 +62,6 @@ export default function AboutPageClient() {
         highlightedText="Your Yacht, Your Journey"
       />
 
-      {/* Philosophy */}
-      <section className="page-section-panel">
-        <div className="page-container" style={{ textAlign: 'center' }}>
-          <AnimatedSection>
-            <motion.div
-              className="section-label"
-              style={{ marginBottom: '2rem' }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              Our Philosophy
-            </motion.div>
-          </AnimatedSection>
-          <AnimatedSection delay={0.1}>
-            <p className="intro-text" style={{ marginBottom: '2rem' }}>
-              Yacht Group International operates as a comprehensive luxury lifestyle company specializing
-              in yacht brokerage, charters, and premium experiential services. We distinguish ourselves
-              through personalized service delivery across multiple luxury sectors.
-            </p>
-          </AnimatedSection>
-          <AnimatedSection delay={0.2}>
-            <p className="intro-text">
-              The art of luxury curation, where expertise in yacht brokerage combines with dedicated
-              personalization, transforming adventures into opulent experiences.
-            </p>
-          </AnimatedSection>
-        </div>
-      </section>
-
       {/* Team Section */}
       <section className="page-section" ref={teamRef}>
         <div className="page-container">
@@ -154,6 +123,37 @@ export default function AboutPageClient() {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Philosophy */}
+      <section className="page-section-panel">
+        <div className="page-container" style={{ textAlign: 'center' }}>
+          <AnimatedSection>
+            <motion.div
+              className="section-label"
+              style={{ marginBottom: '2rem' }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              Our Philosophy
+            </motion.div>
+          </AnimatedSection>
+          <AnimatedSection delay={0.1}>
+            <p className="intro-text" style={{ marginBottom: '2rem' }}>
+              Yacht Group International operates as a comprehensive luxury lifestyle company specializing
+              in yacht brokerage, charters, and premium experiential services. We distinguish ourselves
+              through personalized service delivery across multiple luxury sectors.
+            </p>
+          </AnimatedSection>
+          <AnimatedSection delay={0.2}>
+            <p className="intro-text">
+              The art of luxury curation, where expertise in yacht brokerage combines with dedicated
+              personalization, transforming adventures into opulent experiences.
+            </p>
+          </AnimatedSection>
         </div>
       </section>
 
