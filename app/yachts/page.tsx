@@ -135,28 +135,6 @@ export default function YachtsPage() {
         </motion.div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="ec-stats">
-        <div className="ec-stats-inner">
-          <div className="ec-stat">
-            <span className="ec-stat-number">{yachts.length}</span>
-            <span className="ec-stat-label">Yachts</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">75-222</span>
-            <span className="ec-stat-label">Feet</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">9</span>
-            <span className="ec-stat-label">Destinations</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">24/7</span>
-            <span className="ec-stat-label">Support</span>
-          </div>
-        </div>
-      </section>
-
       {/* Filter & Grid */}
       <section className="ec-collection">
         <div className="ec-collection-header">

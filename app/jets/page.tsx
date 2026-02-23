@@ -131,28 +131,6 @@ export default function JetsPage() {
         </motion.div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="ec-stats">
-        <div className="ec-stats-inner">
-          <div className="ec-stat">
-            <span className="ec-stat-number">{privateJets.length}</span>
-            <span className="ec-stat-label">Aircraft</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">5</span>
-            <span className="ec-stat-label">Categories</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">500+</span>
-            <span className="ec-stat-label">Airports</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">4hr</span>
-            <span className="ec-stat-label">Min Notice</span>
-          </div>
-        </div>
-      </section>
-
       {/* Filter & Grid */}
       <section className="ec-collection">
         <div className="ec-collection-header">

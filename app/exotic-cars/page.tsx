@@ -125,28 +125,6 @@ export default function ExoticCarsPage() {
         </motion.div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="ec-stats">
-        <div className="ec-stats-inner">
-          <div className="ec-stat">
-            <span className="ec-stat-number">{exoticCars.length}</span>
-            <span className="ec-stat-label">Vehicles</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">8</span>
-            <span className="ec-stat-label">Marques</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">12</span>
-            <span className="ec-stat-label">Locations</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">24/7</span>
-            <span className="ec-stat-label">Delivery</span>
-          </div>
-        </div>
-      </section>
-
       {/* Filter & Grid */}
       <section className="ec-collection">
         <div className="ec-collection-header">

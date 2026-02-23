@@ -131,28 +131,6 @@ export default function VillasPage() {
         </motion.div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="ec-stats">
-        <div className="ec-stats-inner">
-          <div className="ec-stat">
-            <span className="ec-stat-number">{villas.length}</span>
-            <span className="ec-stat-label">Villas</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">5</span>
-            <span className="ec-stat-label">Regions</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">45+</span>
-            <span className="ec-stat-label">Destinations</span>
-          </div>
-          <div className="ec-stat">
-            <span className="ec-stat-number">5-Star</span>
-            <span className="ec-stat-label">Service</span>
-          </div>
-        </div>
-      </section>
-
       {/* Filter & Grid */}
       <section className="ec-collection">
         <div className="ec-collection-header">
